@@ -2,21 +2,12 @@
 
 \subsection{Optimizing for mean number of samples per step}\label{ssec:optimization:samples}
 
-We first look at the application of \cref{eq:epsilon_terminal} for the optimization of number of captured samples per step.
-We start with this metric as its implications for resource consumption and responsiveness are straightforward to understand.
-On the one hand, higher sampling rates directly lead to perceived increased system responsiveness, as smaller sampling intervals translate into smaller maximum wait times.
-On the other, the relationship between number of samples captured and sent and network congestion is exponential, and too high sampling rates quickly lead to bottlenecks on the network, particularly in multi-tenant environments.
-Additionally, the energy cost of capturing a sample on a \gls{WCA} client device is often much higher than remaining in an idle state, and thus excessive sampling leads to drastically increased energy consumption.
-Optimizing the number of samples captured per step can thus be a straightforward way of reducing resource consumption and contention in \gls{WCA} applications.
+\todo[inline]{Weave into introductory part of this section.}
 
-However, an unconstrained optimization of the number of samples is trivial and meaningless as the solution points to a single sample at $t\!\rightarrow\!\infty$, which also takes the wait time to infinity.
-Thus, we look at the constrained optimization of the expected number of samples with an upper bound $w_0$ for the expected wait.
-That is, $\mathbb{E}[\mathcal{W}]\!\leq\!w_0$.
-We show in \cref{appx1} that we can find appropriate $\alpha$ and $\beta$ for this problem by satisfying the condition
-\begin{alignat}{1}\label{eq:optimization:sampling}
-\frac{\alpha}{\beta}=\frac{2\sqrt{2}\,w_0^2}{(\mathlarger{\Gamma}(\tfrac{3}{4}))^2\,\sigma}\approx1.9\frac{w_0^2}{\sigma}
-\end{alignat}
-where $\mathlarger{\Gamma}(x)$ is the Gamma function.
+
+
+\todo[inline]{}
+
 
 \medskip
 
@@ -128,22 +119,6 @@ As \glspl{RTT} increase above the expected wait time, the probability of the sum
 This leads to these sampling schemes consistently sampling only twice each step: a first sample which is taken before the execution time of the step, and a second one \gls{RTT} seconds later, after the execution time has been reached.
 
 \subsection{Optimizing for energy consumption}\label{ssec:optimization:energy}
-
-Next we will explore the implications of combining our timing models with \cref{eq:epsilon_terminal} when directly optimizing for energy consumption in \gls{WCA}.
-Although, as mentioned above, minimizing the number of samples captured during a step can \emph{potentially} translate into a reduction in the energy consumption, this is not a given.
-Energy consumption depends on multiple other factors other than number of samples captured, such as idle versus communication power and delays, and thus cannot be optimized by simply minimizing the number of samples taken.
-
-In the following, we thus take the general solution, \cref{eq:epsilon_terminal}, and find the appropriate \( \alpha \) and \( \beta \) to minimize the energy consumed per step, i.e.\ \( \mathcal{E}=E \).
-We directly take the modeling from~\cite{moothedath2022energy2} with a necessary modification in the  assumption of one-way communication in all but the final sample.
-With feedback given even to the discarded samples in our model and communication delay defined as the total delay in either direction, we have, 
-\begin{alignat}{2}
-    \mathrm{E}=&\;\mathcal{S}\tau_cP_c+(\mathcal{T}+\mathcal{W}+\tau_\mathrm{p}+\tau_\mathrm{c}-\mathcal{S}\tau_c)P_0\nonumber\\
-    % &=s\tau_c(P_c-P_0^{(t)})+wP_0^{(t)}+(\tau+\tau_c+\tau_p) P_0^{(t)}+\tau_cP_c\\
-    =&\;\tau_{\text{c}}(P_{\text{c}} -P_0)\mathcal{S}+\mathcal{W}P_0+(\mathcal{T}+\tau_{\text{p}} +\tau_{\text{c}}) P_0\nonumber\\
-&\Rightarrow \alpha=\tau_{\text{c}}(P_{\text{c}} -P_0),\text{ and }\beta=P_0 \label{eq:optimization:energy}
-\end{alignat}
-\( \tau_\text{p} \) and \( \tau_\text{c} \) correspond to the processing and two-way communication delay for each sample.
-\( P_\text{c} \) and \( P_0 \) correspond to the communication and idle power, respectively, of the \gls{WCA} client device.
 
 We proceed to repeat the experiment detailed in \cref{ssec:optimization:samples}, replacing the sample-count-optimized sampling scheme with a new implementation instead minimizing energy, using \cref{eq:optimization:energy} for the calculation of \( \alpha \) and \( \beta \).
 Once again, we embed a timing model into the sampling scheme to provide updated estimates of the mean execution time \( \mu \) at each step.
