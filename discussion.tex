@@ -1,61 +1,4 @@
-\section{Background of \acs{WCA}}\label{sec:background}
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=.9\textwidth]{figs/task}
-        \caption{%
-            Overview of a task in a \gls{WCA}, composed of a series of steps.
-            Each steps starts with an instruction being provided to the user and ends with the instruction for the next step.
-            The \gls{WCA} continuously samples the task state, automatically triggering transitions between steps as correct (or incorrect) states are recognized.
-        }\label{fig:task}
-    \end{subfigure}\\
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=.9\textwidth]{figs/step_time}
-        \caption{%
-            Breakdown of a step into its timing components.
-            The instruction for step \( M \) and \( M + 1 \) are provided to the user at \( t_0 \) and \( t_{n+1} \), respectively.
-            \( t_k | k \in \{1, \ldots, n \} \) correspond to the \gls{WCA} sampling instants for step \( M \), and \( t_c \) marks the instant at which the user finishes performing the instruction.
-        }\label{fig:step}
-    \end{subfigure}
-    \caption{Key concepts in \gls{WCA}}
-\end{figure}
-
-\glspl{WCA} applications represent a category of novel, context-sensitive and highly-interactive \gls{AR} applications.
-In this work we focus on a particular category --- ``step-based'' \gls{WCA} --- that have as their goal the guiding of a user through a sequential task.
-Examples of such applications are the LEGO and IKEA assistants~\cite{chen2015early,chen2018application}, in which users are guided step-by-step through the process of assembling a LEGO model and an IKEA lamp, respectively.
-
-Step-based \glspl{WCA} operate analogously to how \gls{GPS} navigation assistants guide users, by seamlessly and continuously monitoring the progress of the user and autonomously providing relevant instructions and feedback.
-The application follows the progress of the task in ``realtime'' by repeatedly sampling the state of the physical system, most commonly through video frames.
-Whenever the assistant detects that the user has correctly or incorrectly performed an instruction, it provides a new instruction to either advance the task or correct the detected mistake.
-The application otherwise remains silent and out-of-the-way of the user;
-that is, samples which do not generate a new instruction (e.g.~because they captured an intermediate or unfinished state, or simply noise) are silently discarded.
-Herein lies one of the key characteristics of these applications: the user only consciously interacts with the application whenever they finish an instruction, and thus these are the \emph{only} points in time at which they can notice changes in system responsiveness.
-
-In order to discuss these applications with precision we provide some definitions relating to their operation.
-First of all, a \emph{step} is formally understood as a specific action to be performed by the user, described by a single instruction, and a \emph{task} consists of a series of steps to be executed in sequence (see \cref{fig:task}).
-A step begins when the corresponding instruction is provided to the user, and ends when the instruction for the next step is provided; we call the time interval between these two events the \emph{step duration}.
-
-\glspl{WCA} employ sampling, most commonly of video feeds, to keep track of the state of the real world.
-Take \( \{ t_0, t_1, \ldots, t_{n + 1} \} \) a series of discrete and sequential sampling instants at which the \gls{WCA} captures the state of the physical system, as illustrated in \cref{fig:step}.
-\( t_0 \) corresponds to the instant at which the instruction for step \( M \) is provided and the first sample is taken, and \( t_n \) to the instant at which the final sample (i.e.\ which captures the final state of step \( M \)) is taken. 
-\( t_{n + 1} \) is then the instant at which the result for sample \( t_n \) is returned and the instruction for step \( M + 1 \) is provided.
-We define \( t_c \) as the point in time at which the user finishes performing the instruction for step \( M \), and the intervals \( t_c - t_0 \), \( t_n - t_c \), and \( t_{n + 1} - t_n \) as the \emph{execution time}, \emph{wait time}, and \emph{last sample \gls{RTT}}, respectively, of a step \( M \).
-The sum of the latter two values (i.e.\ the interval \( t_{n + 1} - t_c \)) we call \emph{\gls{TTF}}, a metric which we will repeatedly refer to in this paper as it directly describes the responsiveness of a \gls{WCA}.
-
-% It should be noted 
-% it must follow that (see also~\cite{olguinmunoz:impact2021})\footnote{\( U(a, b) \) represents the continuous uniform distribution in the open interval \( (a, b) \).}
-% % \todo[inline]{I think it's an assumption rather than a must. Specifically, it is not uniform if the general execution time distribution is Rayleigh/ExpGaussian -vishnu}
-% \begin{align}\label{eq:tc}
-%     t_c &\thicksim U(t_{n - 1}, t_n)
-% \end{align}
-
-% Current implementations, such as those in~\cite{Chen2015LEGO,Chen2018application}, employ \emph{greedy} sampling.
-% In this scheme, a new sample is immediately taken as soon as an acknowledgement is received for the previous sample.
-% This means that the interval between these sampling instants is not necessarily constant, as it is subject to fluctuations due to resource contention on both the network and compute side.
-% It also has as a consequence that acknowledgements must be provided even for those samples which do not cause the generation of a new instruction --- these acknowledgements are simply used for flow control and do not generate user-noticeable feedback.
+\section{Discussion}
 
 \subsection{The effects of changes in responsiveness on human behavior}\label{ssec:plos}
 
@@ -156,3 +99,120 @@ We found that the effects of neuroticism on execution times were clearly identif
 \cref{fig:muexgaussian} shows an example of this modulating effect, illustrating the behavior of the mean (\( \mu \) parameter) of \gls{exGaussian} distributions fitted to the execution times of the first four steps of segments of steps subject to the same \gls{TTF}.
 Finally, \cref{fig:fitsneuro} shows an example of the effects of neuroticism on the fitted \gls{exGaussian} distributions for a specific group of execution times.
 Higher neuroticism directly translates into a higher mean and longer tail.
+
+\subsection{Implications for the study of \gls{WCA} footprints}\label{sec:implications:footprint}
+
+% \subsection{Application lifetimes}
+
+We begin by studying the implications of such a model on the estimation of application footprints as described by their lifetimes.
+In the context of \gls{WCA}, we will understand \emph{application lifetime} as the time it takes a user to complete a specified task.
+This is an important metric for \gls{WCA} optimization, as it directly relates to system resource utilization and contention, and to energy consumption.
+
+In order to illustrate the consequences of using a less realistic model that does not take into account higher order effects, we introduce here a reference model to which we will compare our more realistic models.
+This model represents a first-order approximation to empirical execution time modeling, and consist simply of an \gls{exGaussian} distribution fitted to all execution time samples collected for~\cite{olguinmunoz2021impact}.
+This distribution is then randomly sampled at runtime to obtain execution times for each step, without any adjustment to the current state of the system.
+
+We start by studying application lifetimes in a controlled, ideal setup by using the timing models to generate execution times for sequences of \num{100} steps subject to constant \glspl{TTF}.
+These runs are completely simulated and no sampling of video frames is performed; for each step, we simply feed the models a predefined \gls{TTF} and record the generated execution time.
+We use the combination of \glspl{TTF} and execution times to calculate theoretical step duration times and subsequent total application lifetimes.
+This is done for \num{25} linearly distributed \glspl{TTF} in the \SIrange[]{0}{5}{\second} range; \num{45} independent repetitions for each combination of model configuration and \gls{TTF}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_all_ttfs.png}
+        \caption{%
+            Evolution of mean application lifetimes as \glspl{TTF} increase.
+            Error bars indicate \SI{95}{\percent} \glspl{CI}.
+        }
+    \end{subfigure}%
+    \hfill%
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_diff.png}
+        \caption{%
+            Percentage difference in mean application lifetimes with respect to the reference model at select \glspl{TTF}.
+            Error bars indicate the \SI{95}{\percent} \glspl{CI}, calculated using a two-sided T-test.
+        }
+    \end{subfigure}
+    \caption{\gls{TTF} versus application lifetime.}\label{fig:lifetimes}
+\end{figure}
+
+The results of this investigation are presented in \cref{fig:lifetimes}.
+Compared to the reference model, our realistic model is, on average, roughly \SI{11}{\percent} faster when subject to low \glspl{TTF}.
+At higher \glspl{TTF}, the behavior of the model depends on its level of normalized neuroticism.
+At low neuroticism, the behavior of the realistic model results in total task durations that are basically indistinguishable from the reference model.
+However, at high neuroticism, the model once again results in a considerable difference in total task duration with respect to the reference --- this time extending durations by \textasciitilde\SI{11}{\percent} on average.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.9\textwidth]{figs/EdgeDroid2ExperimentalSetup}
+    \caption{%
+        Experimental setup used to study the implications of the realistic models of human behavior for \gls{WCA}.
+        We deploy containerized instances of the client-server loop running the models on a testbed consisting of \num{10} Raspberry Pi clients connected to a cloudlet over a \gls{COTS} \gls{IEEE} \num{802.11}b/g access point.
+    }\label{fig:expsetup}
+\end{figure}
+
+Next we study the effects of first- versus second-order models in a more realistic setting.
+The models, reference and realistic, are deployed on the Raspberry Pi clients of the testbed depicted in \cref{fig:expsetup}.
+For this, the timing models and frame generator are integrated into a custom Python3 client for the Gabriel \gls{WCA} platform~\cite{chen2018application}, which are then paired with real instances of Gabriel deployed on the cloudlet.
+Clients and cloudlet communicate over an \gls{IEEE} \num{802.11}b/g wireless network.
+Our choice of wireless standard is simply motivated by a desire to amplify the potential effects of network congestion.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_testbed}
+        \caption{%
+            Mean application lifetimes per testbed configuration.
+            Note that due to the low number of samples, means have been calculated using the geometric instead of arithmetic average. 
+            Error bars indicate \SI{95}{\percent} \glspl{CI}, calculated using bootstrapping.
+        }
+    \end{subfigure}%
+    \hfill%
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_testbed_diff}
+        \caption{%
+            Percentage difference in mean application lifetimes with respect to the reference model.
+            Confidence intervals have been omitted due to the low number of samples and the use of the geometric mean.
+        }
+    \end{subfigure}\\
+    \bigskip
+    \begin{subtable}{\textwidth}
+        \centering
+        \begin{tabular}{lrrrr}
+            \toprule
+            \# clients & 1 & 4 & 7 & 10 \\
+            \gls{RTT} & \SI{0.42}{\second} & \SI{1.12}{\second} & \SI{1.92}{\second} & \SI{2.68}{\second} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Mean measured \glspl{RTT} for each testbed configuration.}
+    \end{subtable}
+    \caption{Application lifetimes in the realistic scenarios.}\label{fig:testbed_lifetimes}
+\end{figure}
+
+We deploy configurations running \num{45}-step versions of the LEGO task described in~\cite{olguinmunoz2021impact}.
+The testbed configurations include setups with \numlist{1;4;7;10} clients.
+Due to having limited time, each combination of testbed and timing model configuration is only repeated \num{10} times.
+The results are presented in \cref{fig:testbed_lifetimes}.
+Owing to the low number of samples, specifically to minimize the effects of potential outliers, we opt here for the geometric rather than arithmetic mean to represent our results.
+The results are nonetheless clear, and follow the same pattern as the previously discussed results under ideal, controlled circumstances.
+With just a single client and mean \gls{RTT} of around \SI{400}{\milli\second}, all parameterizations of the realistic model achieved an average task duration \SIrange{6}{12}{\percent} shorter than the reference.
+At \num{10} clients, the results mimic those at higher \glspl{TTF} in the ideal controlled setup, with high neuroticism parameterizations reaching \textasciitilde\SI{8}{\percent} longer application lifetimes.
+
+These results highlight the importance of accurate execution time modeling when studying \gls{WCA} application lifetimes.
+Not only do we see considerable differences in lifetimes at relatively moderate levels of system congestion, but the sign of these differences depends on the load placed on the system.
+Imagine thus a system designer studying resource consumption optimization in a \gls{WCA}.
+If they were to employ the reference model for their study on an unimpaired system, it could lead them to significantly underestimate the potential for optimization of resource consumption, leaving performance (and, potentially, monetary) gains on the table.
+On the other hand, under heavy load, they would instead underestimate system resource occupation, again leading to performance losses.
+
+% \todo[inline]{%
+%     Ergo we need a second order model. Everything that comes afterwards is only with second order model. Play with RTT.
+% }
+
+
+% .as well as an additional setup with \num{10} clients during which an instance of the \emph{iperf3}\footnote{\href{https://iperf.fr/}{https://iperf.fr/}} network load generator is also running on each client.
+% The \emph{iperf3} instances each generate \SI{1.5}{Mbps} of upstream \gls{TCP} traffic, further congesting the wireless network.

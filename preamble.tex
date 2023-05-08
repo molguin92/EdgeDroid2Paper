@@ -56,12 +56,18 @@
 
 
 % glossary settings
-%\setglossarystyle{mcolindexgroup}
-\glsdisablehyper  % no glossary section in paper, so no links
+% \setglossarystyle{mcolindexgroup}
 \setabbreviationstyle[acronym]{long-short-user}
-%\glstoctrue%
-%\makeglossaries%
-\loadglsentries{./resources/glossary.tex}
+% \glstoctrue%
+\makeglossaries%
+\newcommand*\nestedgls[1]{%
+  \protect\ifglsused{#1}{%
+    \glsentryshort{#1}%
+  }{%
+    \glsentrylong{#1}%
+  }%
+}
+\loadglsentries{resources/glossary.tex}
 
 
 % bibliography settings
