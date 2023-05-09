@@ -21,6 +21,7 @@
 \usepackage{makecell}
 \usepackage{tabularx}
 \usepackage[all]{hypcap}
+\usepackage[newfloat]{minted} % must be loaded after amsmath
 \usepackage[capitalize,nameinlink,noabbrev]{cleveref}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage[detect-weight=true,detect-family=true,binary-units=true,list-units=single,range-units=single]{siunitx}
@@ -44,6 +45,8 @@
 ]{biblatex}
 \usepackage[inline]{enumitem}
 \usepackage{todonotes}
+
+\SetupFloatingEnvironment{listing}{name=List.,within=none}
 
 % enumitem
 \newlist{inlineenum}{enumerate*}{1}
@@ -79,6 +82,7 @@
 \AtEveryBibitem{\clearfield{series}}
 \AtEveryBibitem{\clearlist{location}}
 \AtEveryBibitem{\clearfield{doi}}
+\DeclareFieldInputHandler{shorthand}{\def\NewValue{}}
 
 % SI settings
 \sisetup{list-final-separator = {, and }}

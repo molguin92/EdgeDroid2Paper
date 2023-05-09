@@ -1,53 +1,9 @@
 \section{Discussion}
 
-\subsection{The effects of changes in responsiveness on human behavior}\label{ssec:plos}
-
-In~\cite{olguinmunoz2021impact} we studied the effects of system responsiveness on human behavior in step-based \gls{WCA} in a controlled experiment.
-We employed a modified and instrumented version of the above-mentioned, step-based LEGO \gls{WCA}~\cite{chen2015early}.
-\num{40} subjects interacted with the assistant, performing a \num{169}-step task while we altered the responsiveness in realtime and captured key application and task performance metrics.
-Additionally, we also employed questionnaires to evaluate personality traits of the participants, and correlated these results with the task performance metrics.
-
-We used \emph{delay} and execution time as the variables for system responsiveness and human behavior, respectively.
-\emph{Delay} corresponded to a temporarily fixed time duration for the processing interval of each frame.
-That is, if during a series of steps delay was set to \( D \) seconds, the feedback for each frame was provided to the user \( D \) seconds after frame capture.
-The correlation between this variable and execution time was then studied.
-To compensate for the distribution of \( t_c \)\footnote{\( t_c \), and conversely the wait time \( \mathcal{W} \) of a step, can be assumed to be uniformly distributed in the interval \( [t_{n - 1}, t_n] \) without loss of generality.}~\cite{olguinmunoz2021impact}, in the present work we adjust the nominal delay \( D \) by a factor \num{1.5}.
-We will refer to this adjusted delay as \emph{\glspl{TTF}}.
-
-% Delay, however, was merely an experimental tool, and if we consider
-% \begin{inlineenum}
-%     \item that \( t_c \), and conversely the wait time \( \mathcal{W} \) of a step, can be assumed to be uniformly distributed in the interval \( [t_{n - 1}, t_n] \) without loss of generality~\cite{olguinmunoz:impact2021}
-%     \item that for a step subject to delay \( D \), \( t_k - t_{k - 1} = D \) for all \( k \in \{1, 2, \ldots, n\} \)
-% \end{inlineenum},
-% then it follows that the expected \gls{TTF} for steps subject to a delay \( D \) can be expressed as
-
-% \begin{align}
-%     \mathbb{E}\left[\text{\gls{TTF}}\right] &= \mathbb{E}\left[\mathcal{W}\right] + D
-%     = \mathbb{E}\left[U(t_{n - 1}, t_n)\right] + D\nonumber\\
-%     &= \mathbb{E}\left[U(0, D)\right] + D
-%     = \frac{1}{2}D + D = \frac{3}{2}D\label{eq:ttf}
-% \end{align}
-
-% Ergo, we can directly re-parameterize the data from~\cite{olguinmunoz:impact2021} to use \gls{TTF} instead of delay by simply multiplying the delay value of each step by \num{1.5}.
-
-Our findings can be summarized as follows:
-\begin{enumerate}
-    \item System slow-down induces \emph{additional} behavioral slow-down which scales with the decrease in system responsiveness.
-    Compared to the unimpaired case, participants were on average \SI{12}{\percent} slower when subject to a mean \gls{TTF} of \SI{2.475}{\second}, and \num{26} percentage points slower at a mean \gls{TTF} of \SI{4.5}{\second}.
-
-    \item\label{item:speedup} At lower \glspl{TTF}, humans get faster at performing steps as the task progresses,
-    For sequences of \num{12} steps in an unimpaired application state, humans executed the final four steps on average \SI{36}{\percent} faster than they did the first four.
-    However, this effect is dampened by reduced system responsiveness, and actually inverts at the highest levels of system impairment;
-    humans actually become progressively slower the longer they spend in a degraded system state.
-
-    \item\label{item:remain} The effects of system slow-down on human behavior remain for a while even after system responsiveness improves.
-    These effects are noticeable for at least \num{4} steps after the return to a high-responsiveness state. 
-    
-    \item The above effects are modulated by measures of individual levels of personality characteristics and focus.
-    % We will discuss this in detail below in \cref{ssec:moderationeffects}
-\end{enumerate}
-
 \subsubsection{Moderation of effects by individual characteristics}\label{ssec:moderationeffects}
+
+\todo[inline]{Needs massaging.}
+
 
 We recorded variables related to well-known individual differences, encompassing both the \glspl{BFI}~\cite{john1999big}, and the \glspl{ITQ}~\cite{witmer1998measuring}.
 Out of the individual-difference variables, the most salient effect on performance corresponded to \emph{neuroticism}, a \gls{BFI} trait linked to low tolerance for stress and high emotional reactivity, and which has previously been linked to higher \emph{delay discounting} rates~\cite{hirsh2008delay}.
@@ -100,7 +56,9 @@ We found that the effects of neuroticism on execution times were clearly identif
 Finally, \cref{fig:fitsneuro} shows an example of the effects of neuroticism on the fitted \gls{exGaussian} distributions for a specific group of execution times.
 Higher neuroticism directly translates into a higher mean and longer tail.
 
-\subsection{Implications for the study of \gls{WCA} footprints}\label{sec:implications:footprint}
+\subsection{Implications of the model of human behavior for the study of \gls{WCA} footprints}\label{sec:implications:footprint}
+
+\todo[inline]{Needs massaging.}
 
 % \subsection{Application lifetimes}
 
