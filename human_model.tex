@@ -28,13 +28,12 @@ Our findings in this work can be summarized as follows:
     % We will discuss this in detail below in \cref{ssec:moderationeffects}
 \end{enumerate}
 
-We employ these insights together with the data collected for~\cite{olguinmunoz2021impact} to design and build a probabilistic model of human execution times for \gls{WCA}.
-We detail the construction of a model which uses the data collected to generate, at runtime, realistic distributions of execution times.
-These distributions are updated at each step of the task, based on the current and historical impairment of the \gls{WCA} system, as well as salient individual-difference measures such as \emph{neuroticism}.
-
 \subsection{Generating realistic execution times}\label{ssec:model:exectimes}
 
-The dataset from~\cite{olguinmunoz2021impact} consists of timing and performance metrics for \num{40} participants performing a \num{169}-step task, guided by a \gls{WCA}, as well as personality trait scores for each participant.
+We employ the above insights together with the data collected for~\cite{olguinmunoz2021impact} to design and build a probabilistic model capable of generating, at runtime, realistic distributions of human execution times for \gls{WCA}.
+These distributions are updated at each step of the task, based on the current and historical impairment of the \gls{WCA} system, as well as salient individual-difference measures such as \emph{neuroticism}.
+
+The dataset from~\cite{olguinmunoz2021impact} consists of timing and performance metrics as well as personality trait scores for each participant.
 We use this data to construct a model for the generation of execution times by, in simplified terms, grouping execution time samples according to discretized levels of neuroticism and a weighted rolling average of \gls{TTF}.
 The resulting collections of execution times represent the distributions of these values for users with specific levels of neuroticism, interacting with systems at specific states of impairment and recent histories of impairment.
 These distributions can also then be sampled to produce new, realistic execution times.
@@ -84,7 +83,6 @@ The exact resulting bins of this operation on the data are presented in \cref{ta
 
 Next, the data is further tagged according to its associated level of normalized neuroticism.
 For this work, we use two levels, \emph{low} and \emph{high}, the exact values for which can also be seen in \cref{tab:defaultbins}.
-
 After this preprocessing has been finished, the data is ready to be used for the generation of execution times by applying the above steps in real-time to measured \glspl{TTF}:
 
 \begin{enumerate}
@@ -125,7 +123,7 @@ These are reformulated as objectives below:
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{figs/new_model/ttf_to_exectime}
+    \includegraphics[width=.9\columnwidth]{figs/new_model/ttf_to_exectime}
     \caption{%
         Effects of feeding three different \glspl{TTF} (\emph{low}, \SI{0}{\second}, \emph{medium}, \SI{2.5}{\second}, or \emph{high}, \SI{5}{\second}) into the model on the generated execution times.
         Higher \glspl{TTF} directly lead to higher execution times.

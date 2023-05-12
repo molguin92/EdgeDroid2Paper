@@ -30,7 +30,7 @@ The effect of neuroticism was observed across all \glspl{TTF} and impairment dur
 
 \begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{figs/new_model/mu_fits_exgaussian_slice0}
+    \includegraphics[width=.9\columnwidth]{figs/new_model/mu_fits_exgaussian_slice0}
     \caption{%
         \( \mu \) parameter of \gls{exGaussian} distributions fitted to execution times of the first four steps of segments of steps subject to the same \gls{TTF} in~\cite{olguinmunoz2021impact}.
         Distributions were fitted using \gls{MLE}.
@@ -103,14 +103,14 @@ At higher \glspl{TTF}, the behavior of the model depends on its level of normali
 At low neuroticism, the behavior of the realistic model results in total task durations that are basically indistinguishable from the reference model.
 However, at high neuroticism, the model once again results in a considerable difference in total task duration with respect to the reference --- this time extending durations by \textasciitilde\SI{11}{\percent} on average.
 
-\begin{figure}
+\begin{figure*}
     \centering
     \includegraphics[width=.9\textwidth]{figs/EdgeDroid2ExperimentalSetup}
     \caption{%
         Experimental setup used to study the implications of the realistic models of human behavior for \gls{WCA}.
         We deploy containerized instances of the client-server loop running the models on a testbed consisting of \num{10} Raspberry Pi clients connected to a cloudlet over a \gls{COTS} \gls{IEEE} \num{802.11}b/g access point.
     }\label{fig:expsetup}
-\end{figure}
+\end{figure*}
 
 Next we study the effects of first- versus second-order models in a more realistic setting.
 The models, reference and realistic, are deployed on the Raspberry Pi clients of the testbed depicted in \cref{fig:expsetup}.
@@ -139,7 +139,7 @@ Our choice of wireless standard is simply motivated by a desire to amplify the p
         }
     \end{subfigure}\\
     \bigskip
-    \begin{subtable}{\textwidth}
+    \begin{subtable}{\columnwidth}
         \centering
         \begin{tabular}{lrrrr}
             \toprule
