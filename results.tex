@@ -1,39 +1,40 @@
 \section{Results}
 
-\todo[inline]{Needs rewrite.}
+In this section we discuss the implications of our optimization framework and model of human behavior for the optimization of
+\begin{enumerate*}[itemjoin*={{, and }}, itemjoin={{, }}]
+    \item the number of samples captured
+    \item the total energy consumption
+\end{enumerate*}
+per step in a \gls{WCA} task.
+To this end, we introduce here three reference schemes to which we will compare our approach.
 
-We introduce here a reference scheme to which we will compare our approach.
-In~\cite{wang2019towards}, \citeauthor{wang2019towards} introduce an adaptive sampling scheme for \gls{WCA} intended to reduce the number of samples processed per step while still meeting application responsiveness bounds.
-At every sampling instant \( t \), the scheme adapts the sampling rate \( R(t) \) of the system according to the estimated likelihood of the user having finished the step,
-following the formula 
-
+Our first reference scheme corresponds to the heuristic, state-of-the-art adaptive sampling approach introduced in~\cite{wang2019towards}.
+In this work, the authors introduce an adaptive sampling scheme for \gls{WCA} intended to reduce the number of samples processed per step while still meeting application responsiveness bounds.
+At every sampling instant \( t \), the scheme adapts the sampling rate of the system according to the estimated likelihood of the user having finished the step.
+They express this adaptive sampling rate \( R(t) \) as
 \begin{equation}
     R(t) = R_\text{min} + \varphi\left( R_\text{max} - R_\text{min} \right) * CDF(t)
 \end{equation}
-
 \( R_\text{max} \) and \( R_\text{min} \) correspond to the maximum and minimum sampling rates of the system, respectively.
 \( R_\text{max} \) can directly be assumed to correspond to \( 1 / \text{\gls{RTT}}_\mu \), where \( \text{\gls{RTT}}_\mu \) corresponds to the mean \gls{RTT} of the system.
 \( R_\text{min} \) needs to either be calculated according to the latency bounds of the system or specified manually.
 \( \varphi \) corresponds to a scaling factor and \( t \) to the time of the current sampling instant with respect to the start of the step.
-Finally, \( CDF \) corresponds to the \gls{CDF} of a distribution describing the execution times for the current step; \citeauthor{wang2019towards} used a single static Gaussian distribution for all steps in their work.
+\( CDF \) corresponds to the \gls{CDF} of a Gaussian distribution describing the execution times for the current step.
 
-\medskip
-
-In the following, we will show the effects of our optimization approach combined with our timing models compared to the state-of-the-art approach~\cite{wang2019towards}.
-For this we implement these sampling schemes in Python and run a number of simulations with them.
-The first scheme uses our approach, \cref{eq:epsilon_terminal,eq:optimization:sampling}, to determine the optimum sampling instants and the values for \( \alpha \) and \( \beta \) at each step.
-It includes an embedded timing model (without any distribution fitting) to provide updated estimates of the mean execution time \( \mu \) and \( \sigma \) at every step as well, allowing it to adapt to the state of the system.
-We will refer to this scheme as the \emph{sample-count-optimized aperiodic} sampling scheme.
-
-We implement \citeauthor{wang2019towards}'s original design using a Gaussian distribution fitted to all the execution times collected for~\cite{olguinmunoz2021impact} for \gls{CDF} calculation.
-This scheme does not include an embedded timing model, and uses the same \gls{CDF} for every step.
-
-Finally, we also implement two reference sampling schemes representing best- and worst-case extremes.
+We also implement two reference sampling schemes representing best- and worst-case extremes.
 The first of these corresponds to the offline optimum which uses an embedded \emph{oracle} to perfectly predict the execution time of each step.
 Such an ideal scheme is thus able to always sample exactly once per step, with a constant wait time of zero.
-The second reference scheme corresponds to one which \emph{greedily} samples as much as possible.
+The third and final reference scheme corresponds to one which \emph{greedily} samples as much as possible.
 This represents a completely unoptimized design with no considerations for resource-consumption trade-offs; it simply attempts to maximize the number of captured samples per step.
 This is an interesting approach to include as it corresponds to the sampling strategy used in most existing \gls{WCA} prototypes.
+
+In the following, we will show the effects of our optimization approach combined with our timing models compared to the reference schemes.
+We implement all sampling schemes in Python and run a number of simulations with them.
+Our approach is based on \cref{eq:tnRayleigh,eq:tnRayleigh:energy,eq:tnRayleigh:samples} to determine quasi-optimum sampling instants at each step.
+It includes an embedded timing model outputting an empirical distribution to provide updated estimates of the execution time \( \mu \) and \( \sigma \), allowing it to adapt to the state of the system.
+
+\subsection{Optimizing for number of samples}\label{ssec:optimization:samples}
+\todo[inline]{TODO}
 
 \begin{table}
     \centering
