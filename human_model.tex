@@ -6,34 +6,53 @@ In~\cite{moothedath2021energy,moothedath2022energy1,moothedath2022energy2}, \ens
 We argue, however, that works such as~\cite{olguinmunoz2021impact} show that the assumption of a constant \ensuremath{\sigma} is unrealistic, as users change their timing profile depending on the perceived responsiveness of the system.
 Furthermore, users have varying levels of sensitivity to the effects of reduced system responsiveness, and thus may exhibit different \ensuremath{\sigma} for the same system state.
 
-In~\cite{olguinmunoz2021impact} we studied the effects of system responsiveness on human behavior in step-based \gls{WCA} in a controlled experiment.
-We employed a modified and instrumented version of the above-mentioned, step-based LEGO \gls{WCA}~\cite{chen2015early}.
+In this section, we therefore propose the development of a stochastic model of human execution times for the estimation and prediction of \ensuremath{\sigma}.
+This model is built using data from our previous work in~\cite{olguinmunoz2021impact}, and operates at the same scale as our optimization framework, that is on individual steps in a \gls{WCA} task.
+It takes as input variables describing the current responsiveness of the \gls{WCA} application, and outputs a distribution of possible execution times for the next step of the task.
+The model can thus be used to estimate real-time, updated values for \ensuremath{\sigma} at the end of a, which in turn can then be used to calculate quasi-optimum aperiodic sampling intervals for the upcoming step.
+Additionally, we design the model to be parameterizable with variables describing individual differences between modeled users, allowing for greater variety in emulation.
+
+\subsection{Human reaction to changes in \gls{WCA} application responsiveness}\label{sec:model:insights}
+
+In~\cite{olguinmunoz2021impact}, we studied the effects of system responsiveness on human behavior in step-based \gls{WCA} in a controlled experiment.
+We employed a modified and instrumented version of the previously mentioned step-based LEGO \gls{WCA}~\cite{chen2015early}.
 \num{40} subjects interacted with the assistant, performing a \num{169}-step task while we altered the responsiveness in realtime and captured key application and task performance metrics.
-Additionally, we also employed questionnaires to evaluate personality traits of the participants, and correlated these results with the task performance metrics.
+Additionally, we employed questionnaires to evaluate personality traits of the participants, and correlated these results with the task performance metrics.
 
-Our findings in this work can be summarized as follows:
-\begin{enumerate}
-    \item System slow-down induces \emph{additional} behavioral slow-down which scales with the decrease in system responsiveness.
-    Compared to the unimpaired case, participants were on average \SI{12}{\percent} slower when subject to a mean \gls{TTF} of \SI{2.475}{\second}, and \num{26} percentage points slower at a mean \gls{TTF} of \SI{4.5}{\second}.
+Below, we summarize our findings and use them to define as objectives for the modeling of execution times.
+Our first finding relates to the immediate effects of system slow-down on human behavior.
+We found that system slow-down induces \emph{additional} behavioral slow-down which scales with the decrease in system responsiveness.
+Compared to the unimpaired case, participants were on average \SI{12}{\percent} slower when subject to a mean \gls{TTF} of \SI{2.475}{\second}, and \num{26} percentage points slower at a mean \gls{TTF} of \SI{4.5}{\second}.
+This leads to a straightforward modeling objective; higher \glspl{TTF} should result in higher execution times.
 
-    \item\label{item:speedup} At lower \glspl{TTF}, humans get faster at performing steps as the task progresses,
-    For sequences of \num{12} steps in an unimpaired application state, humans executed the final four steps on average \SI{36}{\percent} faster than they did the first four.
-    However, this effect is dampened by reduced system responsiveness, and actually inverts at the highest levels of system impairment;
-    humans actually become progressively slower the longer they spend in a degraded system state.
+Next, we found that humans get faster at performing steps as the task progresses at lower \glspl{TTF}.
+For sequences of \num{12} steps in an unimpaired application state, humans executed the final four steps on average \SI{36}{\percent} faster than they did the first four.
+However, this effect is dampened by reduced system responsiveness, and actually inverts at the highest levels of system impairment;
+humans actually become progressively slower the longer they spend in a degraded system state.
+We reformulate this finding as a three-pronged modeling objective.
+When subject to a series of steps at the same level of impairment, desired behavior depends on the level:
+\begin{enumerate*}[itemjoin={{; }}, itemjoin*={{; and }}]
+    \item at low \glspl{TTF}, the model should speed up; i.e.\ execution times should decrease
+    \item at medium \glspl{TTF}, execution times should remain more or less the same
+    \item at high \glspl{TTF}, execution times should increase
+\end{enumerate*}.
 
-    \item\label{item:remain} The effects of system slow-down on human behavior remain for a while even after system responsiveness improves.
-    These effects are noticeable for at least \num{4} steps after the return to a high-responsiveness state. 
-    
-    \item The above effects are modulated by measures of individual levels of personality characteristics and focus.
-    % We will discuss this in detail below in \cref{ssec:moderationeffects}
-\end{enumerate}
+Our third finding involves the behavior of humans after a slow-down in system responsiveness subsides.
+We found that the effects of system slow-down on human behavior remain for a while even after system responsiveness improves.
+Specifically, these effects are noticeable for at least \num{4} steps after the return to a high-responsiveness state.
+The reformulation of this insight as a modeling objective is once again trivial; after a period of low system responsiveness, execution times should remain higher than otherwise for at least four steps after a return to a higher system responsiveness.
+
+Finally, we found that the effects of system responsiveness on human reaction and behavior are modulated by individual levels of personality characteristics and focus.
+In particular, we identified \emph{neuroticism}, a trait from the \gls{BFI}, as a the main modulating factor for differences between users.
+We discuss this further in \cref{sec:discussion}.
+As a modeling objective, we express this as a requirement for the model to accept some parameter which modulates the strength of the modeled effects..
 
 \subsection{Generating realistic execution times}\label{ssec:model:exectimes}
 
-We employ the above insights together with the data collected for~\cite{olguinmunoz2021impact} to design and build a probabilistic model capable of generating, at runtime, realistic distributions of human execution times for \gls{WCA}.
+To design and build a probabilistic model capable of generating, at runtime, realistic distributions of human execution times for \gls{WCA}, we employ the above insights together with the data collected for~\cite{olguinmunoz2021impact}.
 These distributions are updated at each step of the task, based on the current and historical impairment of the \gls{WCA} system, as well as salient individual-difference measures such as \emph{neuroticism}.
 
-The dataset from~\cite{olguinmunoz2021impact} consists of timing and performance metrics as well as personality trait scores for each participant.
+As discussed in \cref{sec:model:insights}, the dataset from~\cite{olguinmunoz2021impact} consists of timing and performance metrics as well as personality trait scores for each participant.
 We use this data to construct a model for the generation of execution times by, in simplified terms, grouping execution time samples according to discretized levels of neuroticism and a weighted rolling average of \gls{TTF}.
 The resulting collections of execution times represent the distributions of these values for users with specific levels of neuroticism, interacting with systems at specific states of impairment and recent histories of impairment.
 These distributions can also then be sampled to produce new, realistic execution times.
@@ -65,10 +84,7 @@ Thus, we convert from nomimal delay to \gls{TTF} simply through multiplication b
 
 Next, the \num{6760} data points are arranged in a table together with identifiers for the subjects, their normalized neuroticism score, and a sequence number for each step.
 We calculate rolling weighted averages of the \glspl{TTF} of each of the \num{40} individual repetitions of the data.
-We use exponentially decaying weights for the most recent \num{12} steps, defined in \cref{eq:weights}, such that the most recent \gls{TTF} accounts for roughly \SI{50}{\percent} of the rolling average, the second-most recent for \textasciitilde\SI{25}{\percent}, the third-most \textasciitilde\SI{12}{\percent}, and so on.
-We additionally pad the data for each run with \num{12} copies of the first \gls{TTF} in order to ensure sensible values for the first twelve steps; this padding is removed after the weighted values have been calculated.
-This weighing ensures that drastic changes in \gls{TTF} are significantly remembered by the model for at least \num{4} steps --- in line with our previous findings on human behavior~\cite{olguinmunoz2021impact} --- and are subsequently quickly forgotten.
-\begin{equation}\label{eq:weights}
+We use exponentially decaying weights for the most recent \num{12} steps, defined in \cref{eq:weights}, such that the most recent \gls{TTF} accounts for roughly \SI{50}{\percent} of the rolling average, the second-most recent for \textasciitilde\SI{25}{\percent}, the third-most \textasciitilde\SI{12}{\percent}, and so on.\begin{equation}\label{eq:weights}
     w_{n - i} = 
     \left\{ \begin{array}{ll}
         \frac{e^{-0.7 i}}{\sum\limits^{12}_{j=1} e^{-0.7 j}} & 1 \leq i \leq 12 \\
@@ -77,21 +93,25 @@ This weighing ensures that drastic changes in \gls{TTF} are significantly rememb
     \end{array} \right.
 \end{equation}
 
+We pad the data for each run with \num{12} copies of the first \gls{TTF} in order to ensure sensible values for the first twelve steps; this padding is removed after the weighted values have been calculated.
+This weighing ensures that drastic changes in \gls{TTF} are significantly remembered by the model for at least \num{4} steps --- in line with our previous findings on human behavior~\cite{olguinmunoz2021impact} --- and are subsequently quickly forgotten.
+\todo[inline]{Do we need more clarification on this?}
+
 The resulting weighted \glspl{TTF} are then binned into continuous ranges by splitting the data on the \num{7}-quantiles.
 The number of quantiles was determined experimentally to be a good binning of the total range of \glspl{TTF} as it resulted in a mostly even distribution of number of samples per bin.
 The exact resulting bins of this operation on the data are presented in \cref{tab:defaultbins}.
 
 Next, the data is further tagged according to its associated level of normalized neuroticism.
 For this work, we use two levels, \emph{low} and \emph{high}, the exact values for which can also be seen in \cref{tab:defaultbins}.
-After this preprocessing has been finished, the data is ready to be used for the generation of execution times by applying the above steps in real-time to measured \glspl{TTF}:
+After this preprocessing has been finished, the data is ready to be used for the generation of execution times:
 
 \begin{enumerate}
-    \item At the beginning of each step, the model is fed the measured \gls{TTF} for the previous step.
+    \item At the end of each step, the measured \gls{TTF} is fed into the model.
     \item The model calculates a weighted average over the latest \num{12} steps using the weights defined in \cref{eq:weights}.
     \item The resulting weighted \gls{TTF} is binned into the corresponding range (\cref{tab:defaultbins}).
     \item The model then filters the pre-processed data to find execution time samples associated with this same discretized weighted \gls{TTF}.
     \item The selected samples are further filtered to match the desired level of neuroticism.
-    \item Finally, the grouped samples are used to either generate an empirical \gls{PDF} or fit a theoretical \gls{PDF}.
+    \item Finally, the grouped samples are used to either generate an empirical \gls{PDF} or fit a theoretical \gls{PDF} for use in the sampling of the next step in the task.
     % \item The remaining samples are then used to output a realistic execution time, either by
     % \begin{itemize}
     %     \item directly sampling the execution time values;
@@ -104,22 +124,6 @@ After this preprocessing has been finished, the data is ready to be used for the
 % We implement these two variants of the model in Python 3.10, and verify their correct behavior in the following.
 
 \subsubsection{Verifying the behavior of the timing model}\label{ssec:model:verification}
-% \todo[inline]{Based on the 4 main conclusions of the PLOS paper.}
-
-We verify the behavior of the above described model with respect to the four main conclusions of our work in~\cite{olguinmunoz2021impact}, which were enumerated at the beginning of the present section..
-These are reformulated as objectives below:
-
-\begin{enumerate}
-    \item\label{it:ttftoexectime} Higher \glspl{TTF} should result in higher execution times.
-    \item\label{it:duration} When subject to a series of steps at the same level of impairment, desired behavior depends on the level:
-    \begin{enumerate}
-        \item At low \glspl{TTF}, the model should speed up; i.e.\ execution times should decrease.
-        \item At medium \glspl{TTF}, execution times should remain more or less the same.
-        \item At high \glspl{TTF}, execution times should increase.
-    \end{enumerate}
-    \item The effects on execution times due to past changes in system responsiveness should linger for at least a few steps whenever system responsiveness changes anew.
-    \item\label{it:neuro} Finally, neuroticism should act as a modulating factor for the above effects.
-\end{enumerate}
 
 \begin{figure}
     \centering
@@ -134,13 +138,14 @@ These are reformulated as objectives below:
 \cref{fig:ttf_to_exectime} shows the mean execution time outputted by the model when fed three different levels of \gls{TTF} (\emph{low}, \SI{0}{\second}, \emph{medium}, \SI{2.5}{\second}, or \emph{high}, \SI{5}{\second}).
 These results were generated by first warming up the model by feeding it \num{25} \glspl{TTF} selected at random from the data before feeding it the desired input \gls{TTF}, and recording the generated execution time.
 This procedure is repeated \num{600} times for each configuration and target \gls{TTF}.
-The resulting mean execution times match precisely the desired behavior mentioned in \cref{it:ttftoexectime}, with the difference in mean execution times at low versus high \glspl{TTF} reaching \SI{14}{\percent} (\textasciitilde\SI{5.6}{\second} to \textasciitilde\SI{6.4}{\second}) in the worst case (high neuroticism configuration).
-Additionally, we can observe the effects of neuroticism on generated execution times, as specified in \cref{it:neuro}.
+The resulting mean execution times match precisely the desired behavior mentioned in \cref{sec:model:insights}, with the difference in mean execution times at low versus high \glspl{TTF} reaching \SI{14}{\percent} (\textasciitilde\SI{5.6}{\second} to \textasciitilde\SI{6.4}{\second}) in the worst case (high neuroticism configuration).
+Additionally, we can observe the effects of neuroticism on generated execution times.
 At low neuroticism, the average difference between execution times at low versus high \glspl{TTF} was of roughly \SI{6.2}{\percent}, compared to \SI{12.5}{\percent} at high neuroticism.
 
 \begin{figure}
     \centering
-    \includegraphics[height=25em]{figs/new_model/exectime_over_steps}
+    % \includegraphics[height=25em]{figs/new_model/exectime_over_steps}
+    \includegraphics[width=.8\columnwidth]{figs/new_model/exectime_over_steps}
     \caption{%
     Effects of prolonged exposure to constant levels of system impairment on the model.
     At low (\SI{0}{\second}) \gls{TTF}, the models speed-up over time; conversely at high (\SI{5.0}{\second}) \gls{TTF}, the models either present no change or drastically increase their generated execution times, depending on the level of neuroticism.
@@ -150,7 +155,7 @@ At low neuroticism, the average difference between execution times at low versus
 
 Next, \cref{fig:exectimeduration} shows the evolution of generated execution times while the model is subject to a fixed \gls{TTF}, either \emph{low} (\SI{0}{\second}) or \emph{high} (\SI{5}{\second}).
 These results were generated by first warming up the model with \num{25} random \glspl{TTF}, and then recording the generated execution times over a sequence of \num{12} steps at a fixed \gls{TTF}; this procedure is repeated \num{600} times for each configuration and target \gls{TTF}.
-Once again, we see here behavior matching what is expected of the model, in particular with respect to \cref{it:duration}.
+Once again, we see here behavior matching what we expect from \cref{sec:model:insights}.
 At low \glspl{TTF}, the model is on average, across all configurations, \SI{8.2}{\percent} faster at step \num{12} when compared to step \num{1}.
 At high \glspl{TTF}, the behavior changes depending on the level of neuroticism of the model.
 Low neuroticism models basically do not change their execution times, whereas high neuroticism configurations are on average \SI{10}{\percent} slower after \num{12} steps.
@@ -253,6 +258,8 @@ These results are once again in line with our findings in~\cite{olguinmunoz2021i
 % \end{enumerate}
 
 \subsection{Obtaining the model}\label{ssec:model:obtaining}
+
+\todo[inline]{Move to the end or introduction. Expand to say we provide implementation of framework too.}
 
 We provide the model implementations in Python~\num{3.10} as well as the base data to the community as \gls{FOSS}.
 All of these are published on the \href{https://github.com/KTH-EXPECA/EdgeDroid2}{\texttt{KTH-EXPECA/EdgeDroid2}} repository on GitHub under a permissive Apache version 2 license.
