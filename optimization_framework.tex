@@ -31,19 +31,20 @@ In the following, we give the mathematical derivation of the optimum aperiodic s
 We begin with the general solution, where the objective function to be minimized is given by \cref{eq:epsilon_terminal}.
 Next, we borrow the idea of checkpointing density from~\cite{satoshi1992optimal} and define an instantaneous sampling rate function $r(t)$ such that,
 \begin{alignat}{1}
-{\int_{t_{n-1}}^{t_n}}r(t)\dif t=1,\;\forall n\geq1
+{\int_{t_{n-1}}^{t_n}}r(t)\dif t=1,\;\forall n\geq1\label{eq:rt}
 \end{alignat}
 Note that, for periodic sampling, this function is a constant equal to the sampling frequency.
 For the aperiodic case, we find $r^*(t)$, the $r(t)$ that minimizes $\mathcal{E}$.
 By construction, the number of samples taken up to any time instant can be computed directly by computing the area under $r(t)$.
 Thus, we obtain the expected number of samples $\mathbb{E}[\mathcal{S}]$ as
 \begin{alignat}{1}
-\mathbb{E}[\mathcal{S}]&=\int_{t=0}^{\infty}\bigg(\!\int_{x=0}^{t}\!\!\!\!r(x)\,\mathrm{d}x\bigg)f_{\mathcal{T}}(t)\,\mathrm{d}t.\label{eq:Es}
+\mathbb{E}[\mathcal{S}]&=\int_{t=0}^{\infty}\bigg(\!\int_{x=0}^{t}\!\!\!\!r(x)\,\mathrm{d}x\bigg)f_{\mathcal{T}}(t)\,\mathrm{d}t\label{eq:Es}
 \end{alignat}
 
 To find  the expected wait  $\mathbb{E}[\mathcal{W}]$, we use the conditional \gls{CDF} of the execution time.
 \begin{alignat}{1}
-\mathbb{P}(\mathcal{W}=t_n-\mathcal{T}\leq t\,\big\vert\,t_{n-1}<\mathcal{T}\leq t_n)=\dfrac{\mathbb{P}(\mathcal{T}\geq t_n-t\,,\,t_{n-1}<\mathcal{T}\leq t_n)}{\mathbb{P}(t_{n-1}<\mathcal{T}\leq t_n)}.
+\mathbb{P}(\mathcal{W}=t_n-\mathcal{T}\leq t\,\big\vert\,t_{n-1}<\mathcal{T}\leq t_n)\nonumber\\
+=\dfrac{\mathbb{P}(\mathcal{T}\geq t_n-t\,,\,t_{n-1}<\mathcal{T}\leq t_n)}{\mathbb{P}(t_{n-1}<\mathcal{T}\leq t_n)}
 \end{alignat}
 The numerator is degenerate when $t\!<\!0$ or $t\!>\!(t_n\!-\!t_{n-1})$.
 Thus, we are only interested in $0\!\leq\!t\!\leq\! (t_n-t_{n-1})$.
@@ -55,10 +56,19 @@ Let $F_{\mathcal{T}}$, $\bar{F}_{\mathcal{T}}$ and $f_{\mathcal{T}}$ correspond 
 Here, \cref{eq:Apx1} is an approximation merely for mathematical maturity due to the slackness of the first inequality in the numerator.
 % We expand $F_\mathcal{T}(t_{n}-t)$ and $F_\mathcal{T}(t_{n-1})$ using Taylor series. Thus we can write the \gls{CCDF} as
 Using Taylor series for $F_\mathcal{T}(t_{n}-t)$ and $F_\mathcal{T}(t_{n-1})$, we can express the \gls{CCDF} as
-\begin{alignat}{1}
-    =&\Big(F_\mathcal{T}(t_n)-\big(F_\mathcal{T}(t_n)+f_\mathcal{T}(t_n)(-t)+f'_\mathcal{T}(t_n)(-t)^2/2!+\dots\big)\Big)\nonumber\\
-    &\div \Big(F_\mathcal{T}(t_n)-\big(F_\mathcal{T}(t_n)+f_\mathcal{T}(t_n)(t_{n-1}-t_n)+f'_\mathcal{T}(t_n)(t_{n-1}-t_n)^2/2!+\dots\big)\Big)\label{eq:ccdf}
-\end{alignat}
+\begin{equation}
+    \begin{split}
+        &\begin{split}
+            \Big(&F_\mathcal{T}(t_n)\\
+            &-\big(F_\mathcal{T}(t_n)+f_\mathcal{T}(t_n)(-t)+\frac{f'_\mathcal{T}(t_n)(-t)^2}{2!}+\dots\big)\Big)
+        \end{split}\\
+        &\begin{split}
+            \div
+            \Big(F_\mathcal{T}(t_n)&-\big(F_\mathcal{T}(t_n)+f_\mathcal{T}(t_n)(t_{n-1}-t_n)\\
+            &+\frac{f'_\mathcal{T}(t_n)(t_{n-1}-t_n)^2}{2!}+\dots\big)\Big)\label{eq:ccdf}
+        \end{split}
+    \end{split}
+\end{equation}
 Simplifying and approximating by ignoring the higher order terms, we arrive at
 \begin{alignat}{1}
 % &=\dfrac{F_\mathcal{T}(t_n)-\big(F_\mathcal{T}(t_n)+f_\mathcal{T}(t_n)(-t)+f'_\mathcal{T}(t_n)(-t)^2/2!+\dots\big)}{F_\mathcal{T}(t_n)-\big(F_\mathcal{T}(t_n)+f_\mathcal{T}(t_n)(t_{n-1}-t_n)+f'_\mathcal{T}(t_n)(t_{n-1}-t_n)^2/2!+\dots\big)}\\&
@@ -98,7 +108,7 @@ As per the Euler-Lagrange equation from the calculus of variations~\cite{bellman
 r^*(t)&=\sqrt{\dfrac{\beta f_\mathcal{T}(t)}{2\alpha\bar{F}_\mathcal{T}(t)}}.\\
 \intertext{Thus, for a Rayleigh distributed $\mathcal{T}$ with parameter $\sigma$,}
 r^*(t)&=\sqrt{\dfrac{\beta t}{2\alpha\sigma^2}}\\
-\Rightarrow &\int_{t_n}^{t_{n+1}}\!\!\!\sqrt{\dfrac{\beta t}{2\alpha\sigma^2}}\,\mathrm{d}t=1,\;\forall n\geq1\nonumber\tag{from \eqref{rt}}\\
+\Rightarrow &\int_{t_n}^{t_{n+1}}\!\!\!\sqrt{\dfrac{\beta t}{2\alpha\sigma^2}}\,\mathrm{d}t=1,\;\forall n\geq1\nonumber\tag{from \eqref{eq:rt}}\\
 \Rightarrow &\;t_{n+1}^{\frac{3}{2}}-t_{n}^{\frac{3}{2}}=3\sigma\!\sqrt{\tfrac{\alpha}{2\beta}}\nonumber\\
 \intertext{We have $t_0=0$. Substituting $n=1,2,\dots$, in order, in the above equation provides us our final result}
 &\;t_n=\Big(3\sigma\!\sqrt{\tfrac{\alpha}{2\beta}}\Big)^{\frac{2}{3}}n^{\frac{2}{3}}\;\blacksquare\label{eq:tnRayleigh}

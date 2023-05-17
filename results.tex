@@ -201,18 +201,18 @@ At higher \glspl{TTF}, the behavior of the model depends on its level of normali
 At low neuroticism, the behavior of the realistic model results in total task durations that are basically indistinguishable from the reference model.
 However, at high neuroticism, the model once again results in a considerable difference in total task duration with respect to the reference --- this time extending durations by \textasciitilde\SI{11}{\percent} on average.
 
-\begin{figure*}
+\begin{figure}
     \centering
-    \includegraphics[width=.9\textwidth]{figs/EdgeDroid2ExperimentalSetup}
+    \includegraphics[width=.9\columnwidth]{figs/EdgeDroid2ExperimentalSetup}
     \caption{%
         Experimental setup used to study the implications of the realistic models of human behavior for \gls{WCA}.
         We deploy containerized instances of the client-server loop running the models on a testbed consisting of \num{10} Raspberry Pi clients connected to a cloudlet over a \gls{COTS} \gls{IEEE} \num{802.11}b/g access point.
     }\label{fig:expsetup}
-\end{figure*}
+\end{figure}
 
 Next we study the effects of first- versus second-order models in a more realistic setting.
 We integrate the execution time models (realistic and reference) with a custom Python3 client for the Gabriel \gls{WCA} platform~\cite{chen2018application}.
-This custom includes a procedure for the generation of dynamic, synthetic traces of inputs from an existing trace.
+This custom client includes a procedure for the generation of dynamic, synthetic traces of inputs from an existing trace.
 It does so by greedily sampling from the existing video frames according to pre-calculated probabilities of specific types of frames (noisy, unfinished step, finished step, etc.) ocurring at particular instants in the task.
 \todo[inline]{More details about the frames?}
 
