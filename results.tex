@@ -153,3 +153,119 @@ This leads to these sampling schemes consistently sampling only twice each step:
 Likewise, \cref{fig:optimization:energy} showcases the advantages of our approach for the optimization of energy consumption in \gls{WCA}.
 Our approach is consistently consumes \SI{20}{\percent} less energy than \textcite{wang2019towards}'s state-of-the-art, and is up to \SI{40}{\percent} more energy efficient than the greedy scheme.
 Furthermore, once again the behavior of our approach is more consistent and reliable than the competition, exhibiting a flat curve of energy consumption much akin to that of the offline optimum in behavior.
+
+\subsection{Implications of the model of human behavior for the study of \gls{WCA} footprints}\label{sec:implications:footprint}
+
+\todo[inline]{This could potentially go in the discussion instead.}
+
+In the following, we diverge from our main discussion regarding the implications of the optimization framework to briefly explore a implication of the model of human behavior itself on \gls{WCA} application lifetimes.
+We will understand \emph{application lifetime} as the time it takes a user to complete a specified task.
+This is an important metric for \gls{WCA} optimization, as it directly relates to system resource utilization and contention, and to energy consumption.
+
+In order to illustrate the consequences of using a realistic model such as the one we describe in \cref{sec:model}, we introduce a much less complex and less realistic reference approach.
+This reference model represents a naïve, first-order approximation to empirical execution time modeling, and consist simply of an \gls{exGaussian} distribution fitted to all execution time samples collected for~\cite{olguinmunoz2021impact}.
+The \gls{exGaussian} \gls{PDF} has an ample body of research supporting its suitability for the modeling of the timing of human actions and reaction times~\cite{rohrer1994analysis,palmer2011what,marmolejo_ramos2022generalised}.
+
+We begin by studying application lifetimes in a controlled, ideal setup by using the timing models to generate execution times for simulated sequences of \num{100} steps subject to constant \glspl{TTF}.
+For each step, we feed the realistic model a predefined \gls{TTF} and obtain an \gls{exGaussian} distribution of execution times according to \cref{ssec:model:exectimes}.
+This distribution is then randomly sampled obtain a single execution time for each step.
+The first-order approximation described above is directly sampled instead.
+We use the combination of \glspl{TTF} and execution times to calculate theoretical step duration times and subsequent total application lifetimes.
+This is done for \num{25} linearly distributed \glspl{TTF} in the \SIrange[]{0}{5}{\second} range; \num{45} independent repetitions for each combination of model configuration and \gls{TTF}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_all_ttfs.png}
+        \caption{%
+            Evolution of mean application lifetimes as \glspl{TTF} increase.
+            Error bars indicate \SI{95}{\percent} \glspl{CI}.
+        }
+    \end{subfigure}%
+    \hfill%
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_diff.png}
+        \caption{%
+            Percentage difference in mean application lifetimes with respect to the reference model at select \glspl{TTF}.
+            Error bars indicate the \SI{95}{\percent} \glspl{CI}, calculated using a two-sided T-test.
+        }
+    \end{subfigure}
+    \caption{\gls{TTF} versus application lifetime.}\label{fig:lifetimes}
+\end{figure}
+
+The results of this investigation are presented in \cref{fig:lifetimes}.
+Compared to the reference model, our realistic model is, on average, roughly \SI{11}{\percent} faster when subject to low \glspl{TTF}.
+At higher \glspl{TTF}, the behavior of the model depends on its level of normalized neuroticism.
+At low neuroticism, the behavior of the realistic model results in total task durations that are basically indistinguishable from the reference model.
+However, at high neuroticism, the model once again results in a considerable difference in total task duration with respect to the reference --- this time extending durations by \textasciitilde\SI{11}{\percent} on average.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=.9\textwidth]{figs/EdgeDroid2ExperimentalSetup}
+    \caption{%
+        Experimental setup used to study the implications of the realistic models of human behavior for \gls{WCA}.
+        We deploy containerized instances of the client-server loop running the models on a testbed consisting of \num{10} Raspberry Pi clients connected to a cloudlet over a \gls{COTS} \gls{IEEE} \num{802.11}b/g access point.
+    }\label{fig:expsetup}
+\end{figure*}
+
+Next we study the effects of first- versus second-order models in a more realistic setting.
+We integrate the execution time models (realistic and reference) with a custom Python3 client for the Gabriel \gls{WCA} platform~\cite{chen2018application}.
+This custom includes a procedure for the generation of dynamic, synthetic traces of inputs from an existing trace.
+It does so by greedily sampling from the existing video frames according to pre-calculated probabilities of specific types of frames (noisy, unfinished step, finished step, etc.) ocurring at particular instants in the task.
+\todo[inline]{More details about the frames?}
+
+These clients are then deployed on the Raspberry Pi clients of the testbed depicted in \cref{fig:expsetup}.
+Instances of the Gabriel platform are deployed on the cloudlet.
+Clients and cloudlet communicate over an \gls{IEEE} \num{802.11}b/g wireless network.
+Our choice of wireless standard is simply motivated by a desire to amplify the potential effects of network congestion.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_testbed}
+        \caption{%
+            Mean application lifetimes per testbed configuration.
+            Note that due to the low number of samples, means have been calculated using the geometric instead of arithmetic average. 
+            Error bars indicate \SI{95}{\percent} \glspl{CI}, calculated using bootstrapping.
+        }
+    \end{subfigure}%
+    \hfill%
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/new_model/lifetime_testbed_diff}
+        \caption{%
+            Percentage difference in mean application lifetimes with respect to the reference model.
+            Confidence intervals have been omitted due to the low number of samples and the use of the geometric mean.
+        }
+    \end{subfigure}\\
+    \bigskip
+    \begin{subtable}{\columnwidth}
+        \centering
+        \begin{tabular}{lrrrr}
+            \toprule
+            \# clients & 1 & 4 & 7 & 10 \\
+            \gls{RTT} & \SI{0.42}{\second} & \SI{1.12}{\second} & \SI{1.92}{\second} & \SI{2.68}{\second} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Mean measured \glspl{RTT} for each testbed configuration.}
+    \end{subtable}
+    \caption{Application lifetimes in the realistic scenarios.}\label{fig:testbed_lifetimes}
+\end{figure}
+
+We deploy configurations running \num{45}-step versions of the LEGO task described in~\cite{olguinmunoz2021impact}.
+The testbed configurations include setups with \numlist{1;4;7;10} clients.
+Each combination of testbed and timing model configuration is repeated \num{10} times.
+The results are presented in \cref{fig:testbed_lifetimes}.
+Owing to the low number of samples, specifically to minimize the effects of potential outliers, we opt here for the geometric rather than arithmetic mean to represent our results.
+The results are nonetheless clear, and follow the same pattern as the previously discussed results under ideal, controlled circumstances.
+With just a single client and mean \gls{RTT} of around \SI{400}{\milli\second}, all parameterizations of the realistic model achieved an average task duration \SIrange{6}{12}{\percent} shorter than the reference.
+At \num{10} clients, the results mimic those at higher \glspl{TTF} in the ideal controlled setup, with high neuroticism parameterizations reaching \textasciitilde\SI{8}{\percent} longer application lifetimes.
+
+These results highlight the importance of accurate execution time modeling when studying \gls{WCA} application lifetimes.
+Not only do we see considerable differences in lifetimes at relatively moderate levels of system congestion, but the sign of these differences depends on the load placed on the system.
+Imagine thus a system designer studying resource consumption optimization in a \gls{WCA}.
+If they were to employ the reference model for their study on an unimpaired system, it could lead them to significantly underestimate the potential for optimization of resource consumption, leaving performance (and, potentially, monetary) gains on the table.
+On the other hand, under heavy load, they would instead underestimate system resource occupation, again leading to performance losses.
