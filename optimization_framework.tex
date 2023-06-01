@@ -1,21 +1,16 @@
 \section{An optimization framework for \glsfmtshort{WCA}}
 
-% Thus, we begin by assuming a given execution time distribution \( \mathcal{T} \), and take the modeling and partial solution approach from recents works .
-% In \textcite{moothedath2021energy,moothedath2022energy1}, 
+\subsection{System Model}
 
-Our optimization approach focuses on the individual steps which comprise a complete \gls{WCA} task and is based on previous works on energy efficient sampling in edge-based feedback systems~\cite{moothedath2021energy,moothedath2022energy1,moothedath2022energy2}.
+Our system model for the optimization of energy consumption in \gls{WCA} is based on previous work by~\cite{moothedath2021energy,moothedath2022energy1,moothedath2022energy2}.
 
 In~\cite{moothedath2021energy,moothedath2022energy1}, the authors model the energy in terms of the expected number of samples $\mathbb{E}[\mathcal{S}]$ and the expected wait time $\mathbb{E}[\mathcal{W}]$ experienced by the user.
 They term this expression \emph{energy penalty}, and then proceed to find the optimum periodic sampling interval that minimizes it, or, equivalently, the non-constant parts of it.
 Constants are excluded from this optimization, as they do not affect the process.
 In particular, given that the \gls{RTT} of the final sample generally is much smaller than the total execution time of the event, it is considered part of the constants and not included in the calculation of $\mathcal{W}$.
 Next, in~\cite{moothedath2022energy2}, the author retains the model and removes the constraint of periodicity to find the optimum aperiodic sampling instants $\{t_n,\,n=1,2,\dots\}$ that minimize the energy penalty.
-They use a two-step approach which includes a recursive solution followed by a bisection algorithm.
 
-In this work, we use the modeling from~\cite{moothedath2022energy2} to find the optimum aperiodic sampling interval.
-However, instead of using their two-step approach, we develop a novel, approximate, but easier solution to finding the set of the optimum aperiodic sampling intervals.
-Furthermore, instead of directly optimizing for energy, we expand the approach by noting that, in general, any objective metric in these applications which relates to sampling and the responsiveness of the system will present itself as a linear combination between $\mathbb{E}[\mathcal{S}]$ and $\mathbb{E}[\mathcal{W}]$ plus terms independent of the number of samples or wait time.
-
+We note here that, in general, any objective metric in these applications which relates to sampling and the responsiveness of the system will present itself as a linear combination between $\mathbb{E}[\mathcal{S}]$ and $\mathbb{E}[\mathcal{W}]$ plus terms independent of the number of samples or wait time.
 Let $\mathcal{E}$ correspond to such an objective metric.
 Thus, 
 \begin{alignat}{1}
@@ -23,11 +18,18 @@ Thus,
 \end{alignat}
 % This corresponds to a Lagrangian function of this optimization, with \ensuremath{\frac{\alpha}{\beta}} representing the Lagrangian parameter.
 Here, $\alpha, \beta$ and $C$ are constants responsible for modifying the objective function from one metric to another.
-For instance, in the modeling used by~\cite{moothedath2021energy,moothedath2022energy1,moothedath2022energy2}, the chosen characterization results in a metric which is equal to the energy penalty.
+For instance, in the modeling used by~\cite{moothedath2021energy,moothedath2022energy1,moothedath2022energy2} and in this work, the chosen characterization results in a metric which is equal to the energy penalty.
+
+\todo[inline]{system model should include \cref{eq:epsilon_terminal}}
+\todo[inline]{discuss why exact solution is infeasible to implement}
+\todo[inline]{Needs a problem formulation.}
+\todo[inline]{We're not interested in the actual optimum solution, as that already exists, but in how such a solution materializes as an implementation.}
+\todo[inline]{We don't focus on all aspects. Just how 1. optimal algorithm is brought into a practical implementation, 2. human user responsiveness modeling, 3. how change of sampling feeds into network responsiveness}
+\todo[inline]{Scrap optimization of number of samples. Put a mention in discussion?}
 
 \subsection{Finding the set of the optimum aperiodic sampling intervals}
 
-In the following, we give the mathematical derivation of the optimum aperiodic sampling intervals.
+% In the following, we give the mathematical derivation of the optimum aperiodic sampling intervals.
 We begin with the general solution, where the objective function to be minimized is given by \cref{eq:epsilon_terminal}.
 Next, we borrow the idea of checkpointing density from~\cite{satoshi1992optimal} and define an instantaneous sampling rate function $r(t)$ such that,
 \begin{alignat}{1}
@@ -121,6 +123,8 @@ r^*(t)&=\sqrt{\dfrac{\beta t}{2\alpha\sigma^2}}\\
 
 \subsubsection{Optimizing for expected number of samples}
 
+\todo[inline]{Remove}
+
 We first look at the application of \cref{eq:epsilon_terminal} and its solution in \cref{eq:tnRayleigh} to the optimization of number of captured samples per step.
 We start with this metric as its implications for resource consumption and responsiveness are straightforward to understand.
 On the one hand, higher sampling rates directly lead to perceived increased system responsiveness, as smaller sampling intervals translate into smaller maximum wait times.
@@ -190,5 +194,11 @@ Plugging then \cref{eq:optimization:energy} into \cref{eq:tnRayleigh}, gives us 
 \todo[inline]{TODO}
 
 \subsection{Implementation}
+
+Next, in~\cite{moothedath2022energy2}, the author retains the model and removes the constraint of periodicity to find the optimum aperiodic sampling instants $\{t_n,\,n=1,2,\dots\}$ that minimize the energy penalty.
+They use a two-step approach which includes a recursive solution followed by a bisection algorithm.
+
+In this work, we use the modeling from~\cite{moothedath2022energy2} to find the optimum aperiodic sampling interval.
+However, instead of using their two-step approach, we develop a novel, approximate, but easier solution to finding the set of the optimum aperiodic sampling intervals.
 
 \todo[inline]{TODO: what to put here?}
